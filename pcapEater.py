@@ -3,6 +3,7 @@
 
 import argparse
 import dpkt
+import os
 
 
 class co:
@@ -41,7 +42,7 @@ def crunch(GET_reqList, POST_reqList, outfile):
         print(
             co.R +
             '\n[-] No GET Requests found!\n' + 
-            co.E 
+            co.E
         )
     if len(POST_reqList) > 0:
         print(
@@ -104,7 +105,7 @@ def pcapEater(infile, httpPorts):
         if a not in GET_reqList:
             GET_reqList.append(a)
     for b in POST_staging:
-        if b not in POST_reqList:  
+        if b not in POST_reqList:
             POST_reqList.append(b)
 
     return GET_reqList, POST_reqList
@@ -135,6 +136,8 @@ if __name__ == '__main__':
             co.E
         )
         exit(0)
+    if not os.path.exists('./outputs/'):
+        os.makedirs('./outputs/')
     if not outfile:
         print('\n[-] No output file specified! saving to ./outputs/output.%s.txt\n' % infile)
         outfile = './outputs/output.%s.txt' % infile
