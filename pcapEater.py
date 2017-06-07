@@ -79,26 +79,29 @@ def pcapEater(infile, httpPorts):
     with open(infile, 'r') as incap:
         pcap = dpkt.pcap.Reader(incap)
         for timestamp, buf in pcap:
-            ethernet = dpkt.ethernet.Ethernet(buf)
-            ip = ethernet.data
-            tcp = ip.data
-            if tcp.__class__.__name__ == 'TCP':
-                if tcp.dport in httpPorts:
-                    if len(tcp.data) > 0:
-                        try:
-                            http = dpkt.http.Request(tcp.data)
-                            if http.method == 'GET':
-                                GET_staging.append(
-                                    http.headers['host'] +
-                                    http.uri
-                                )
-                            elif http.method == 'POST':
-                                POST_staging.append(
-                                    http.headers['host'] +
-                                    http.uri
-                                )
-                        except Exception, e:
-                            pass
+            try:
+                ethernet = dpkt.ethernet.Ethernet(buf)
+                ip = ethernet.data
+                tcp = ip.data
+                if tcp.__class__.__name__ == 'TCP':
+                    if tcp.dport in httpPorts:
+                        if len(tcp.data) > 0:
+                            try:
+                                http = dpkt.http.Request(tcp.data)
+                                if http.method == 'GET':
+                                    GET_staging.append(
+                                        http.headers['host'] +
+                                        http.uri
+                                    )
+                                elif http.method == 'POST':
+                                    POST_staging.append(
+                                        http.headers['host'] +
+                                        http.uri
+                                    )
+                            except Exception, e:
+                                pass
+            except:
+                pass
         incap.close()
 
     for a in GET_staging:
